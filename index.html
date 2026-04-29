@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Microsoft 365 · Taller Completo · ONDP</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+/* ───────────────────────────────────────────
+   RESET & ROOT
+─────────────────────────────────────────── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --w:    #ffffff;
+  --bg:   #f0f4f9;
+  --s0:   #0C1F3F;   /* institutional navy */
+  --s1:   #0d47a1;   /* deep blue */
+  --s2:   #1565C0;
+  --ms:   #0078D4;   /* Microsoft blue */
+  --sky:  #00BCF2;
+  --teal: #00897B;
+  --grn:  #2E7D32;
+  --pur:  #6A1B9A;
+  --amb:  #C9A227;
+  --org:  #E65100;
+  --red:  #C62828;
+  --txt:  #1a2740;
+  --mut:  #546E7A;
+  --lgt:  #90A4AE;
+  --bdr:  #d8e3ef;
+  --card: rgba(255,255,255,0.85);
+  --sans: 'DM Sans',sans-serif;
+  --slab: 'DM Serif Display',serif;
+  --mono: 'Fira Code',monospace;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font-family:var(--sans);}
+
+/* animated background */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 10%, rgba(0,120,212,.07) 0%,transparent 55%),
+    radial-gradient(ellipse 60% 50% at 85% 90%, rgba(201,162,39,.07) 0%,transparent 50%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(0,188,242,.04) 0%,transparent 60%);
+  pointer-events:none;z-index:0;
+}
+
+/* ───────────────────────────────────────────
+   PROGRESS
+─────────────────────────────────────────── */
+#prog{
+  position:fixed;top:0;left:0;height:3px;z-index:700;
+  background:linear-gradient(90deg,var(--ms),var(--sky),var(--amb));
+  transition:width .45s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 12px rgba(0,120,212,.5);
+}
+
+/* ───────────────────────────────────────────
+   TOP BAR
+─────────────────────────────────────────── */
+#topbar{
+  position:fixed;top:0;left:0;right:0;height:50px;z-index:600;
+  background:var(--s0);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;
+  box-shadow:0 2px 16px rgba(0,0,0,.3);
+}
+#tbar-brand{display:flex;align-items:center;gap:10px;}
+#tbar-logo{
+  font-family:var(--mono);font-size:12px;font-weight:600;
+  color:var(--sky);letter-spacing:1.5px;
+}
+#tbar-sep{width:1px;height:24px;background:rgba(255,255,255,.15);}
+#tbar-inst{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.5px;}
+#tbar-counter{
+  font-family:var(--mono);font-size:11px;
+  color:rgba(255,255,255,.45);
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  padding:3px 11px;border-radius:20px;
+}
+#tbar-counter b{color:var(--sky);font-weight:600;}
+
+/* ───────────────────────────────────────────
+   DECK
+─────────────────────────────────────────── */
+#deck{position:fixed;top:50px;bottom:60px;left:0;right:0;overflow:hidden;z-index:1;}
+
+.slide{
+  position:absolute;inset:0;
+  overflow-y:auto;padding:34px 52px 52px;
+  display:none;
+  animation:sIn .36s ease;
+}
+.slide.active{display:block;}
+.slide::-webkit-scrollbar{width:5px;}
+.slide::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px;}
+@keyframes sIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* ───────────────────────────────────────────
+   BOTTOM NAV
+─────────────────────────────────────────── */
+#botbar{
+  position:fixed;bottom:0;left:0;right:0;height:60px;z-index:600;
+  background:var(--w);
+  border-top:2px solid var(--bdr);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;
+  box-shadow:0 -2px 12px rgba(0,0,0,.06);
+}
+.nbtn{
+  font-family:var(--sans);font-size:13px;font-weight:600;
+  padding:8px 22px;border-radius:7px;
+  border:2px solid var(--bdr);
+  background:var(--w);color:var(--txt);
+  cursor:pointer;transition:all .18s;letter-spacing:.2px;
+}
+.nbtn:hover:not(:disabled){border-color:var(--ms);color:var(--ms);background:#EFF6FC;}
+.nbtn:disabled{opacity:.28;cursor:default;}
+.nbtn.primary{background:var(--ms);color:#fff;border-color:var(--ms);}
+.nbtn.primary:hover:not(:disabled){background:#005A9E;border-color:#005A9E;color:#fff;}
+
+#dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:520px;}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--bdr);cursor:pointer;transition:all .2s;}
+.dot.active{background:var(--ms);transform:scale(1.4);box-shadow:0 0 6px rgba(0,120,212,.45);}
+.dot:hover{background:var(--mut);}
+
+/* ───────────────────────────────────────────
+   ◆ COVER SLIDE
+─────────────────────────────────────────── */
+.slide-cover{background:var(--s0);min-height:100%;display:none;flex-direction:column;justify-content:center;padding:0;overflow:hidden;position:relative;}
+.slide-cover.active{display:flex;}
+
+.cv-mesh{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 70% at 20% 50%,rgba(0,120,212,.25) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 60% at 80% 30%,rgba(0,188,242,.12) 0%,transparent 55%),
+    radial-gradient(ellipse 40% 40% at 60% 80%,rgba(201,162,39,.1) 0%,transparent 50%);
+}
+.cv-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:42px 42px;
+}
+.cv-stripe{
+  position:absolute;right:0;top:0;bottom:0;width:38%;
+  background:linear-gradient(155deg,rgba(0,120,212,.18) 0%,rgba(0,188,242,.06) 100%);
+  clip-path:polygon(22% 0,100% 0,100% 100%,0 100%);
+}
+/* four-quadrant MS icon */
+.cv-icon{
+  position:absolute;right:8%;top:50%;transform:translateY(-50%);
+  display:grid;grid-template-columns:1fr 1fr;gap:7px;
+  width:130px;opacity:.12;
+}
+.cv-icon span{display:block;width:60px;height:60px;border-radius:3px;}
+.cv-icon span:nth-child(1){background:#F25022;}
+.cv-icon span:nth-child(2){background:#7FBA00;}
+.cv-icon span:nth-child(3){background:#00A4EF;}
+.cv-icon span:nth-child(4){background:#FFB900;}
+
+.cv-content{position:relative;z-index:2;padding:60px 70px;max-width:60%;}
+.cv-tag{
+  font-family:var(--mono);font-size:11px;letter-spacing:4px;
+  color:var(--amb);text-transform:uppercase;
+  margin-bottom:22px;display:flex;align-items:center;gap:10px;
+}
+.cv-tag::before{content:'';width:24px;height:2px;background:var(--amb);box-shadow:0 0 8px var(--amb);}
+.cv-h1{
+  font-family:var(--slab);
+  font-size:clamp(2.8rem,5.5vw,5.2rem);
+  line-height:.95;color:#fff;margin-bottom:12px;
+}
+.cv-h1 i{font-style:normal;color:var(--sky);}
+.cv-org{
+  font-family:var(--sans);font-size:clamp(.95rem,1.8vw,1.2rem);
+  font-weight:300;color:rgba(255,255,255,.5);
+  letter-spacing:1.5px;text-transform:uppercase;margin-bottom:28px;
+}
+.cv-blurb{font-size:.98rem;line-height:1.75;color:rgba(255,255,255,.7);max-width:460px;margin-bottom:36px;}
+.cv-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:40px;}
+.cv-chip{
+  font-family:var(--mono);font-size:10.5px;padding:5px 13px;border-radius:4px;font-weight:500;letter-spacing:.4px;
+}
+.cch-b{border:1px solid rgba(0,188,242,.35);color:var(--sky);background:rgba(0,188,242,.07);}
+.cch-g{border:1px solid rgba(46,125,50,.45);color:#66BB6A;background:rgba(46,125,50,.1);}
+.cch-p{border:1px solid rgba(106,27,154,.45);color:#CE93D8;background:rgba(106,27,154,.1);}
+.cch-a{border:1px solid rgba(201,162,39,.4);color:var(--amb);background:rgba(201,162,39,.08);}
+.cv-meta{display:flex;gap:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);}
+.cvm{display:flex;flex-direction:column;gap:3px;}
+.cvm-l{font-family:var(--mono);font-size:9.5px;color:rgba(255,255,255,.3);letter-spacing:2px;text-transform:uppercase;}
+.cvm-v{font-size:.95rem;font-weight:600;color:#fff;}
+
+/* ───────────────────────────────────────────
+   SLIDE ELEMENTS
+─────────────────────────────────────────── */
+.eyebrow{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:3.5px;
+  text-transform:uppercase;color:var(--ms);
+  margin-bottom:9px;display:flex;align-items:center;gap:8px;
+}
+.eyebrow::after{content:'';flex:1;max-width:40px;height:2px;background:var(--ms);opacity:.35;border-radius:1px;}
+
+h2.stitle{
+  font-family:var(--slab);
+  font-size:clamp(1.85rem,3.5vw,2.75rem);
+  color:var(--s0);line-height:1.1;margin-bottom:18px;
+}
+h2.stitle em{font-style:normal;color:var(--ms);}
+h2.stitle .gold{font-style:normal;color:var(--amb);}
+
+h3.sh{
+  font-family:var(--sans);font-size:1.05rem;font-weight:700;
+  color:var(--s0);margin:22px 0 9px;
+  display:flex;align-items:center;gap:7px;
+}
+h3.sh::before{content:'▸';color:var(--ms);font-size:.85rem;}
+
+p.lead{font-size:1.02rem;line-height:1.78;color:var(--txt);margin-bottom:16px;max-width:840px;}
+p.bp{font-size:.9rem;line-height:1.75;color:var(--mut);margin-bottom:10px;}
+code{font-family:var(--mono);font-size:.8em;background:rgba(0,120,212,.07);color:var(--s1);padding:2px 6px;border-radius:3px;border:1px solid rgba(0,120,212,.12);}
+kbd{display:inline-block;padding:2px 7px;font-family:var(--mono);font-size:.78em;background:#fff;border:1.5px solid var(--bdr);border-radius:4px;color:var(--txt);box-shadow:0 2px 0 var(--bdr);font-weight:600;}
+
+/* ── MOD HEADER ── */
+.mhdr{
+  display:flex;align-items:center;gap:16px;
+  background:linear-gradient(135deg,var(--s0) 0%,var(--s1) 100%);
+  border-radius:10px;padding:18px 24px;margin-bottom:24px;
+}
+.mhdr-num{font-family:var(--slab);font-size:2.8rem;color:rgba(255,255,255,.12);min-width:60px;line-height:1;}
+.mhdr-info h2{font-family:var(--sans);font-size:1.4rem;font-weight:700;color:#fff;margin-bottom:3px;}
+.mhdr-info p{font-size:.85rem;color:rgba(255,255,255,.55);}
+.mhdr-badge{margin-left:auto;font-family:var(--mono);font-size:10.5px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.75);padding:4px 12px;border-radius:4px;white-space:nowrap;}
+
+/* ── CARDS ── */
+.grid{display:grid;gap:13px;margin:16px 0;}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr));}
+.g3{grid-template-columns:repeat(auto-fit,minmax(218px,1fr));}
+.g4{grid-template-columns:repeat(auto-fit,minmax(165px,1fr));}
+
+.card{
+  background:var(--card);
+  border:1.5px solid var(--bdr);border-radius:10px;padding:18px 20px;
+  transition:all .22s;position:relative;overflow:hidden;
+  backdrop-filter:blur(8px);
+}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;}
+.card.cb::before{background:var(--ms);}  .card.cg::before{background:var(--grn);}
+.card.cs::before{background:var(--sky);} .card.cp::before{background:var(--pur);}
+.card.ca::before{background:var(--amb);} .card.cr::before{background:var(--red);}
+.card.ct::before{background:var(--teal);}
+.card:hover{border-color:var(--ms);transform:translateY(-2px);box-shadow:0 6px 22px rgba(0,120,212,.1);}
+.ci{font-size:1.7rem;margin-bottom:9px;}
+.ct_{font-family:var(--sans);font-size:.95rem;font-weight:700;color:var(--s0);margin-bottom:5px;}
+.cb_{font-size:.86rem;color:var(--mut);line-height:1.65;}
+.cb_ code{background:rgba(0,120,212,.07);}
+
+/* ── STEPS ── */
+.steps{list-style:none;margin:12px 0;}
+.step{display:flex;gap:13px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--bdr);}
+.step:last-child{border-bottom:none;}
+.sn{width:28px;height:28px;border-radius:6px;background:var(--ms);color:#fff;font-family:var(--mono);font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sc{flex:1;padding-top:3px;}
+.sc strong{display:block;font-size:.92rem;color:var(--s0);margin-bottom:2px;font-weight:600;}
+.sc span{font-size:.86rem;color:var(--mut);line-height:1.65;}
+
+/* ── NOTES ── */
+.note{display:flex;gap:12px;align-items:flex-start;padding:12px 15px;border-radius:8px;margin:12px 0;font-size:.88rem;line-height:1.7;}
+.ni{font-size:1rem;flex-shrink:0;}
+.nb{color:var(--mut);}
+.nb strong{color:var(--txt);}
+.note.tip{background:rgba(46,125,50,.05);border:1px solid rgba(46,125,50,.2);}
+.note.info{background:rgba(0,120,212,.05);border:1px solid rgba(0,120,212,.18);}
+.note.warn{background:rgba(230,81,0,.05);border:1px solid rgba(230,81,0,.2);}
+.note.gold{background:rgba(201,162,39,.05);border:1px solid rgba(201,162,39,.22);}
+.note.pur{background:rgba(106,27,154,.05);border:1px solid rgba(106,27,154,.2);}
+
+/* ── DEMO BOX ── */
+.demo{
+  background:#F8FAFC;border:1.5px solid var(--bdr);
+  border-left:4px solid var(--ms);border-radius:0 10px 10px 0;
+  padding:16px 20px;margin:14px 0;
+}
+.demo-lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:3px;color:var(--ms);text-transform:uppercase;margin-bottom:7px;}
+.demo p{font-size:.9rem;color:var(--txt);line-height:1.72;}
+
+/* ── SECURITY BOX ── */
+.secbox{
+  background:linear-gradient(135deg,var(--s0),#0a1d38);
+  border-radius:10px;padding:18px 22px;margin:14px 0;
+  display:flex;gap:15px;align-items:flex-start;
+}
+.sbico{font-size:1.4rem;flex-shrink:0;}
+.sbcnt{}
+.sbttl{font-family:var(--sans);font-size:.95rem;font-weight:700;color:var(--amb);margin-bottom:5px;}
+.sbtxt{font-size:.87rem;color:rgba(255,255,255,.68);line-height:1.7;}
+
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse;margin:12px 0;font-size:.86rem;}
+.tbl th{background:var(--s0);color:#fff;padding:9px 13px;text-align:left;font-weight:600;font-size:.82rem;letter-spacing:.3px;}
+.tbl td{padding:9px 13px;border-bottom:1px solid var(--bdr);color:var(--mut);vertical-align:top;}
+.tbl td strong{color:var(--txt);}
+.tbl tr:hover td{background:rgba(0,120,212,.03);}
+.tbl tr:nth-child(even) td{background:#F8FAFC;}
+
+/* ── TWO COL ── */
+.tc{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:14px 0;}
+@media(max-width:680px){.tc{grid-template-columns:1fr;}}
+
+/* ── FACILITATOR ── */
+.fac{
+  background:linear-gradient(135deg,var(--s0),#0d2952);
+  border:1.5px solid rgba(0,120,212,.3);border-radius:12px;
+  padding:26px 30px;margin:16px 0;
+  display:flex;gap:22px;align-items:flex-start;
+}
+.fav{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--ms),var(--sky));display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;box-shadow:0 0 18px rgba(0,120,212,.45);}
+.fnm{font-family:var(--slab);font-size:1.45rem;color:#fff;margin-bottom:3px;}
+.frl{font-family:var(--mono);font-size:10.5px;color:var(--sky);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+.fdsc{font-size:.9rem;color:rgba(255,255,255,.67);line-height:1.7;margin-bottom:10px;}
+.ftags{display:flex;flex-wrap:wrap;gap:6px;}
+.ftg{font-size:10.5px;padding:3px 10px;border-radius:4px;font-family:var(--mono);background:rgba(0,120,212,.15);border:1px solid rgba(0,120,212,.3);color:var(--sky);}
+
+/* ── CLOSING ── */
+.chero{
+  background:linear-gradient(135deg,var(--s0),#0d2952);border-radius:12px;padding:26px 30px;margin:16px 0;position:relative;overflow:hidden;
+}
+.chero::after{content:'365';position:absolute;right:18px;top:50%;transform:translateY(-50%);font-family:var(--slab);font-size:90px;color:rgba(255,255,255,.04);letter-spacing:-3px;}
+.chero h3{font-family:var(--slab);font-size:1.4rem;color:#fff;margin-bottom:6px;}
+.chero p{font-size:.88rem;color:rgba(255,255,255,.62);line-height:1.7;max-width:500px;}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin:16px 0;}
+.schip{background:var(--card);border:1.5px solid var(--bdr);border-radius:8px;padding:12px;text-align:center;transition:all .2s;backdrop-filter:blur(6px);}
+.schip:hover{border-color:var(--ms);transform:translateY(-2px);}
+.schip .si{font-size:1.35rem;display:block;margin-bottom:5px;}
+.schip strong{display:block;font-size:.78rem;color:var(--s0);font-weight:700;margin-bottom:2px;}
+.schip span{font-size:.72rem;color:var(--mut);}
+
+/* ── DIVIDER ── */
+.div{height:1px;background:var(--bdr);margin:20px 0;}
+
+/* ── OUTLOOK COMPOSE MOCKUP ── */
+.compose-mock{
+  background:#fff;border:1.5px solid var(--bdr);border-radius:8px;padding:0;overflow:hidden;margin:14px 0;box-shadow:0 4px 20px rgba(0,0,0,.06);
+}
+.cm-title{background:var(--ms);color:#fff;padding:8px 14px;font-size:.82rem;font-weight:600;font-family:var(--sans);}
+.cm-field{display:flex;gap:10px;align-items:flex-start;padding:8px 14px;border-bottom:1px solid var(--bdr);}
+.cm-label{font-size:.78rem;color:var(--mut);font-weight:600;min-width:55px;padding-top:1px;}
+.cm-val{font-size:.82rem;color:var(--txt);flex:1;line-height:1.5;}
+.cm-body{padding:12px 14px;font-size:.82rem;color:var(--txt);line-height:1.75;}
+
+/* ── APP TILES ── */
+.tiles{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0;}
+.tile{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  width:80px;height:80px;border-radius:8px;border:1.5px solid var(--bdr);
+  background:var(--card);font-size:.7rem;font-weight:600;color:var(--mut);
+  cursor:default;transition:all .2s;backdrop-filter:blur(6px);
+}
+.tile:hover{border-color:var(--ms);transform:scale(1.06);}
+.tile span{font-size:1.6rem;}
+</style>
+</head>
+<body>
+
+<div id="prog"></div>
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <div id="tbar-brand">
+    <div id="tbar-logo">ONDP · M365</div>
+    <div id="tbar-sep"></div>
+    <div id="tbar-inst">Oficina Nacional de Defensa Pública</div>
+  </div>
+  <div id="tbar-counter">Diapositiva <b id="cur">01</b> / <b id="tot">--</b></div>
+</div>
+
+<!-- DECK -->
+<div id="deck">
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 00 — PORTADA
+══════════════════════════════════════════════ -->
+<section class="slide slide-cover" data-i="0">
+  <div class="cv-mesh"></div>
+  <div class="cv-grid"></div>
+  <div class="cv-stripe"></div>
+  <div class="cv-icon"><span></span><span></span><span></span><span></span></div>
+  <div class="cv-content">
+    <div class="cv-tag">Taller Institucional · Microsoft 365</div>
+    <h1 class="cv-h1">Domina tu<br><i>Microsoft</i><br>365</h1>
+    <div class="cv-org">Oficina Nacional de Defensa Pública · República Dominicana</div>
+    <p class="cv-blurb">Un taller práctico y completo diseñado para que cada colaborador aproveche al máximo las herramientas de productividad, comunicación y colaboración que Microsoft 365 pone a tu alcance.</p>
+    <div class="cv-chips">
+      <span class="cv-chip cch-b">📧 Correo Electrónico</span>
+      <span class="cv-chip cch-g">☁️ OneDrive</span>
+      <span class="cv-chip cch-p">💬 Microsoft Teams</span>
+      <span class="cv-chip cch-a">📝 Suite Office</span>
+    </div>
+    <div class="cv-meta">
+      <div class="cvm"><span class="cvm-l">Facilitador</span><span class="cvm-v">Claudio Rafael Arias</span></div>
+      <div class="cvm"><span class="cvm-l">Nivel</span><span class="cvm-v">Todos los usuarios</span></div>
+      <div class="cvm"><span class="cvm-l">Módulos</span><span class="cvm-v">4 módulos</span></div>
+      <div class="cvm"><span class="cvm-l">Institución</span><span class="cvm-v">ONDP · RD</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 01 — FACILITADOR
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="1">
+  <div class="eyebrow">Bienvenida</div>
+  <h2 class="stitle">Tu <em>Facilitador</em> de Hoy</h2>
+  <div class="fac">
+    <div class="fav">👨‍💻</div>
+    <div>
+      <div class="fnm">Claudio Rafael Arias</div>
+      <div class="frl">Cisco Cybersecurity Operations Trainer · CEO INCSRD</div>
+      <p class="fdsc">Apasionado por la tecnología, docente incansable y hacker ético con el objetivo de ayudar a personas e instituciones a protegerse en el mundo digital y a sacar el máximo provecho de las herramientas tecnológicas. Asesor de Tecnologías de la Información en la <strong style="color:#fff">Oficina Nacional de Defensa Pública</strong> y formador de campeones internacionales en ciberseguridad: <strong style="color:#FFD700">🥇 Medalla de Oro Chile 2018</strong>, <strong style="color:#C0C0C0">🥈 2021</strong> y <strong style="color:#C0C0C0">🥈 2023</strong>.</p>
+      <div class="ftags">
+        <span class="ftg">🎓 Cisco NetAcad Partner</span>
+        <span class="ftg">🏛️ CEO INCSRD</span>
+        <span class="ftg">⚖️ Asesor TI · Defensa Pública</span>
+        <span class="ftg">🌍 Entrenador WorldSkills</span>
+        <span class="ftg">🏅 3 Medallas Internacionales</span>
+      </div>
+    </div>
+  </div>
+  <h3 class="sh">¿Qué aprenderemos hoy?</h3>
+  <div class="grid g4">
+    <div class="card cb"><div class="ci">📧</div><div class="ct_">Módulo 1</div><div class="cb_">Correo Electrónico con Outlook — Comunicación profesional e institucional.</div></div>
+    <div class="card cg"><div class="ci">☁️</div><div class="ct_">Módulo 2</div><div class="cb_">OneDrive — Almacenamiento, organización y colaboración en la nube.</div></div>
+    <div class="card cp"><div class="ci">💬</div><div class="ct_">Módulo 3</div><div class="cb_">Microsoft Teams — Comunicación, reuniones y trabajo en equipo.</div></div>
+    <div class="card ca"><div class="ci">📝</div><div class="ct_">Módulo 4</div><div class="cb_">Suite Office — Word, Excel y PowerPoint para el trabajo diario.</div></div>
+  </div>
+  <div class="note tip"><span class="ni">💡</span><div class="nb"><strong>Regla de oro del taller:</strong> No hay preguntas tontas. Si algo no quedó claro, pregunta en el momento. Tu duda la tienen muchos y merece una respuesta completa.</div></div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 02 — ¿QUÉ ES MICROSOFT 365?
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="2">
+  <div class="eyebrow">Introducción General</div>
+  <h2 class="stitle">¿Qué es <em>Microsoft 365</em>?</h2>
+  <p class="lead">Microsoft 365 no es solo Word o Excel. Es un ecosistema completo de herramientas de productividad, comunicación y seguridad que trabajan juntas para hacer tu trabajo más eficiente, organizado y seguro desde cualquier lugar.</p>
+  <div class="demo">
+    <div class="demo-lbl">🏢 Analogía institucional</div>
+    <p>Imagina que la Defensa Pública tiene una <strong>oficina digital disponible 24/7</strong>, accesible desde cualquier dispositivo. Microsoft 365 es esa oficina: tiene tu correo (Outlook), tu archivo digital (OneDrive), tu sala de reuniones (Teams), tu procesador de textos (Word), tu hoja de cálculo (Excel) y mucho más — todo conectado, todo seguro.</p>
+  </div>
+  <div class="tiles">
+    <div class="tile"><span>📧</span>Outlook</div>
+    <div class="tile"><span>☁️</span>OneDrive</div>
+    <div class="tile"><span>💬</span>Teams</div>
+    <div class="tile"><span>📝</span>Word</div>
+    <div class="tile"><span>📊</span>Excel</div>
+    <div class="tile"><span>📐</span>PowerPoint</div>
+    <div class="tile"><span>📓</span>OneNote</div>
+    <div class="tile"><span>📋</span>Forms</div>
+    <div class="tile"><span>🗂️</span>Planner</div>
+    <div class="tile"><span>📹</span>Stream</div>
+    <div class="tile"><span>🌐</span>SharePoint</div>
+    <div class="tile"><span>🔒</span>Seguridad</div>
+  </div>
+  <div class="note info"><span class="ni">ℹ️</span><div class="nb"><strong>¿Por qué la ONDP usa Microsoft 365?</strong> Porque ofrece <strong>seguridad de nivel institucional</strong>, cumplimiento de normativas de datos, colaboración eficiente entre departamentos y acceso desde cualquier dispositivo oficial o personal autorizado.</div></div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 03 — M1: CORREO — INTRODUCCIÓN
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="3">
+  <div class="mhdr">
+    <div class="mhdr-num">01</div>
+    <div class="mhdr-info"><h2>Correo Electrónico con Outlook</h2><p>Comunicación profesional, organización y seguridad</p></div>
+    <div class="mhdr-badge">📧 Outlook · Microsoft 365</div>
+  </div>
+  <p class="lead">El correo electrónico es la herramienta de comunicación oficial más importante de cualquier institución. Usarlo bien marca la diferencia entre un profesional organizado y uno que pierde oportunidades.</p>
+  <div class="demo">
+    <div class="demo-lbl">📬 Analogía</div>
+    <p>El correo electrónico institucional es como el sistema de correspondencia oficial de la Defensa Pública, pero digital, instantáneo y con historial. Cada mensaje lleva el nombre y reputación de la institución — un correo bien redactado es tan importante como un documento oficial bien firmado.</p>
+  </div>
+  <div class="grid g2">
+    <div class="card cb"><div class="ci">✉️</div><div class="ct_">Redactar correos profesionales</div><div class="cb_">Estructura correcta, tono adecuado, asunto claro — comunicaciones institucionales que comunican.</div></div>
+    <div class="card cs"><div class="ci">📁</div><div class="ct_">Organizar la bandeja de entrada</div><div class="cb_">Carpetas, categorías de colores, reglas automáticas para mantener el orden y no perder nada.</div></div>
+    <div class="card cg"><div class="ci">📎</div><div class="ct_">Adjuntos y OneDrive integrado</div><div class="cb_">Cómo enviar archivos correctamente, límites de tamaño y la forma inteligente con enlace de OneDrive.</div></div>
+    <div class="card cr"><div class="ci">🔒</div><div class="ct_">Seguridad del correo</div><div class="cb_">Reconocer phishing, correos falsos y cómo proteger las comunicaciones oficiales de la institución.</div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 04 — ACCESO OUTLOOK
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="4">
+  <div class="eyebrow">Módulo 1 · Correo Electrónico</div>
+  <h2 class="stitle">Accediendo a <em>Outlook 365</em></h2>
+  <div class="grid g3">
+    <div class="card cb"><div class="ci">🌐</div><div class="ct_">Desde el navegador web</div><div class="cb_">Ve a <code>outlook.office.com</code> e inicia sesión con tu correo institucional <code>nombre@defensapublica.gob.do</code> y tu contraseña.</div></div>
+    <div class="card cg"><div class="ci">💻</div><div class="ct_">Desde la app de escritorio</div><div class="cb_">Abre el programa <strong>Outlook</strong> instalado en tu computadora. Si está configurado, abre directo a tu bandeja.</div></div>
+    <div class="card cs"><div class="ci">📱</div><div class="ct_">Desde tu celular</div><div class="cb_">Descarga la app <strong>Microsoft Outlook</strong> (gratuita) en Android o iPhone y configura tu cuenta institucional.</div></div>
+  </div>
+  <h3 class="sh">Áreas principales de Outlook</h3>
+  <table class="tbl">
+    <thead><tr><th>Área</th><th>¿Qué contiene?</th><th>¿Para qué sirve?</th></tr></thead>
+    <tbody>
+      <tr><td><strong>📥 Bandeja de Entrada</strong></td><td>Todos los correos que recibes</td><td>Centro de comunicaciones recibidas</td></tr>
+      <tr><td><strong>📤 Elementos Enviados</strong></td><td>Copia de todo lo que enviaste</td><td>Historial y seguimiento de comunicaciones</td></tr>
+      <tr><td><strong>📝 Borradores</strong></td><td>Correos guardados sin enviar</td><td>Continuar redactando más tarde</td></tr>
+      <tr><td><strong>🗑️ Elementos Eliminados</strong></td><td>Correos borrados (30 días)</td><td>Recuperar mensajes eliminados por error</td></tr>
+      <tr><td><strong>⚠️ Correo No Deseado</strong></td><td>Spam y correos sospechosos</td><td>Revisar periódicamente — correos legítimos quedan atrapados</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn"><span class="ni">⚠️</span><div class="nb"><strong>Revisa tu Spam regularmente.</strong> Correos legítimos importantes a veces son filtrados automáticamente. Si encuentras uno válido, selecciónalo y marca como "No es correo no deseado" para que no vuelva a ocurrir.</div></div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 05 — REDACTAR CORREO PROFESIONAL
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="5">
+  <div class="eyebrow">Módulo 1 · Correo Electrónico</div>
+  <h2 class="stitle">Redactando un Correo <em>Profesional</em></h2>
+  <ul class="steps">
+    <li class="step"><div class="sn">1</div><div class="sc"><strong>Para / CC / CCO — ¿A quién va?</strong><span><strong>Para:</strong> destinatario principal (quien debe actuar). <strong>CC (Con Copia):</strong> personas que deben estar informadas. <strong>CCO (Copia Oculta):</strong> no saben que otros reciben el mismo correo — usar con discreción.</span></div></li>
+    <li class="step"><div class="sn">2</div><div class="sc"><strong>Asunto — La clave del correo profesional</strong><span>Claro, específico y conciso. ✅ Correcto: <em>"Solicitud de permiso — 15 oct 2024"</em> o <em>"Informe mensual de casos — Oct 2024"</em>. ❌ Incorrecto: "Hola", "Consulta" o vacío.</span></div></li>
+    <li class="step"><div class="sn">3</div><div class="sc"><strong>Saludo formal</strong><span><em>"Estimado/a [nombre]:"</em>, <em>"Distinguido/a Dr./Dra. [apellido]:"</em>. Para compañeros de confianza: <em>"Buenos días, [nombre]:"</em>.</span></div></li>
+    <li class="step"><div class="sn">4</div><div class="sc"><strong>Cuerpo — Mensaje claro y estructurado</strong><span>Párrafo 1: motivo. Párrafo 2: detalles. Párrafo 3: acción esperada. Oraciones cortas. Sin bloques de texto largos.</span></div></li>
+    <li class="step"><div class="sn">5</div><div class="sc"><strong>Firma profesional automática</strong><span>Nombre completo, cargo, departamento, institución, teléfono y correo. Se configura una vez en Outlook y aparece automáticamente.</span></div></li>
+  </ul>
+  <div class="compose-mock">
+    <div class="cm-title">📧 Nuevo mensaje — Outlook 365</div>
+    <div class="cm-field"><span class="cm-label">Para:</span><span class="cm-val">lcda.martinez@tribunalconstitucional.gob.do</span></div>
+    <div class="cm-field"><span class="cm-label">Asunto:</span><span class="cm-val"><strong>Solicitud de documentos — Expediente 2024-0547</strong></span></div>
+    <div class="cm-body">
+      Estimada Lcda. Martínez:<br><br>
+      Me dirijo a usted para solicitar los documentos del expediente 2024-0547, requeridos para la audiencia del 20 de octubre.<br><br>
+      Agradecería recibirlos antes del 17 de octubre para garantizar la preparación oportuna.<br><br>
+      Atentamente,<br>
+      <strong>[Su nombre] | Defensor/a Público/a · ONDP | 809-XXX-XXXX</strong>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 06 — ORGANIZAR + FIRMA
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="6">
+  <div class="eyebrow">Módulo 1 · Organización y Firma</div>
+  <h2 class="stitle">Organizar la Bandeja y <em>Firma Digital</em></h2>
+  <div class="tc">
+    <div>
+      <h3 class="sh">Carpetas y categorías</h3>
+      <ul class="steps">
+        <li class="step"><div class="sn">📁</div><div class="sc"><strong>Crear carpetas temáticas</strong><span>Clic derecho en "Bandeja de Entrada" → "Crear nueva carpeta". Nombres sugeridos: "Casos Activos", "Administrativo", "Circulares", "Tribunal".</span></div></li>
+        <li class="step"><div class="sn">🏷️</div><div class="sc"><strong>Categorías con colores</strong><span>Clic derecho en cualquier correo → "Categorizar". Azul: urgente · Verde: completado · Rojo: pendiente respuesta · Amarillo: informativo.</span></div></li>
+        <li class="step"><div class="sn">⚡</div><div class="sc"><strong>Reglas automáticas</strong><span>Clic derecho en un correo → "Crear regla". Ejemplo: "Todo correo de @tribunalconstitucional.gob.do → mover a carpeta Tribunal".</span></div></li>
+      </ul>
+      <div class="note tip"><span class="ni">⌨️</span><div class="nb"><strong>Atajos útiles:</strong> <kbd>Ctrl</kbd>+<kbd>N</kbd> Correo nuevo · <kbd>Ctrl</kbd>+<kbd>R</kbd> Responder · <kbd>Ctrl</kbd>+<kbd>F</kbd> Reenviar · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> Enviar · <kbd>Ctrl</kbd>+<kbd>E</kbd> Buscar.</div></div>
+    </div>
+    <div>
+      <h3 class="sh">Configurar tu firma profesional</h3>
+      <ul class="steps">
+        <li class="step"><div class="sn">1</div><div class="sc"><strong>Abrir configuración</strong><span>Ícono ⚙️ (arriba derecha) → "Ver toda la configuración" → "Redactar y responder" → sección "Firma de correo electrónico".</span></div></li>
+        <li class="step"><div class="sn">2</div><div class="sc"><strong>Crear la firma</strong><span>Clic en "+ Nueva firma", nómbrala "Firma Oficial" y escribe el contenido con el editor de texto.</span></div></li>
+        <li class="step"><div class="sn">3</div><div class="sc"><strong>Activar automáticamente</strong><span>En "Seleccionar firmas predeterminadas" elige que aparezca en mensajes nuevos y en respuestas. Guardar.</span></div></li>
+      </ul>
+      <div class="demo" style="margin-top:10px">
+        <div class="demo-lbl">📋 Estructura de firma recomendada</div>
+        <p style="font-size:.82rem;line-height:1.9">
+          <strong>[Nombre Completo]</strong><br>
+          <span style="color:var(--ms)">Defensor/a Público/a · [Área/Departamento]</span><br>
+          Oficina Nacional de Defensa Pública<br>
+          📞 (809) XXX-XXXX &nbsp;|&nbsp; 📧 nombre@defensapublica.gob.do<br>
+          🌐 www.defensapublica.gob.do
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 07 — SEGURIDAD CORREO
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="7">
+  <div class="eyebrow">Módulo 1 · Seguridad</div>
+  <h2 class="stitle">Seguridad en el <em>Correo Institucional</em></h2>
+  <p class="lead">El 91% de los ataques informáticos comienzan con un correo electrónico. Reconocer una amenaza a tiempo puede evitar un desastre institucional.</p>
+  <table class="tbl">
+    <thead><tr><th>Señal de alerta</th><th>¿Qué buscar?</th><th>Ejemplo</th></tr></thead>
+    <tbody>
+      <tr><td><strong>🔍 Remitente sospechoso</strong></td><td>El dominio no corresponde a la organización real</td><td><code>soporte@microsoft-seguro.net</code> ≠ <code>support@microsoft.com</code></td></tr>
+      <tr><td><strong>⚡ Urgencia extrema</strong></td><td>"¡Actúa YA!", "Tu cuenta expira en 2 horas"</td><td>Nadie legítimo da plazos de horas para actuar</td></tr>
+      <tr><td><strong>🔗 Enlace sospechoso</strong></td><td>Pasa el cursor sobre el enlace SIN hacer clic y lee la URL</td><td>El texto dice "banco.com" pero la URL va a otro sitio</td></tr>
+      <tr><td><strong>📎 Adjunto inesperado</strong></td><td>Archivos .exe .zip .docm de desconocidos</td><td>"Comprobante" de alguien que nunca conociste</td></tr>
+      <tr><td><strong>📝 Errores de redacción</strong></td><td>Ortografía incorrecta, texto mal traducido</td><td>Comunicaciones "oficiales" con múltiples errores</td></tr>
+    </tbody>
+  </table>
+  <div class="tc">
+    <div class="secbox">
+      <span class="sbico">🚨</span>
+      <div class="sbcnt">
+        <div class="sbttl">¿Recibiste un correo sospechoso?</div>
+        <p class="sbtxt">1. <strong>NO hagas clic</strong> en ningún enlace.<br>2. <strong>NO respondas</strong> ni des información.<br>3. <strong>Repórtalo</strong> al área de TI.<br>4. <strong>Elimínalo</strong> permanentemente.</p>
+      </div>
+    </div>
+    <div class="note gold" style="margin:0;align-self:stretch">
+      <span class="ni">🛡️</span>
+      <div class="nb"><strong>Regla de oro absoluta:</strong><br>Ninguna institución legítima, banco o empresa de tecnología te pedirá tu <strong>contraseña, número de cédula completo o datos bancarios por correo electrónico</strong>. Si lo hace, es un intento de fraude. Nunca, jamás.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 08 — M2: ONEDRIVE INTRO
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="8">
+  <div class="mhdr">
+    <div class="mhdr-num">02</div>
+    <div class="mhdr-info"><h2>OneDrive — Tu Oficina en la Nube</h2><p>Almacena, accede, comparte y colabora en documentos institucionales desde cualquier lugar</p></div>
+    <div class="mhdr-badge">☁️ OneDrive · Microsoft 365</div>
+  </div>
+  <p class="lead">OneDrive es el servicio de almacenamiento en la nube de Microsoft incluido en tu cuenta de Microsoft 365. Es como una <strong>memoria USB ilimitada y siempre contigo</strong>, pero mucho más segura y con capacidad de colaborar en tiempo real.</p>
+  <div class="demo"><div class="demo-lbl">📂 Analogía institucional</div><p>Imagina que cada expediente de la Defensa Pública estuviera en una bóveda digital perfectamente organizada, accesible desde cualquier dispositivo y donde dos abogados pueden trabajar en el mismo documento simultáneamente sin enviarse versiones. Eso es OneDrive.</p></div>
+  <div class="grid g3">
+    <div class="card cg"><div class="ci">💾</div><div class="ct_">Nunca pierdes archivos</div><div class="cb_">Si la computadora falla o es robada, tus documentos están seguros en la nube. Recuperación garantizada.</div></div>
+    <div class="card cb"><div class="ci">📱</div><div class="ct_">Acceso desde cualquier lugar</div><div class="cb_">Computadora del trabajo, celular o cualquier dispositivo con internet. Sin memorias USB que perder.</div></div>
+    <div class="card cs"><div class="ci">🔄</div><div class="ct_">Siempre actualizado</div><div class="cb_">No más "versión_final_2_definitiva.docx". Guarda cada cambio automáticamente con historial de versiones.</div></div>
+    <div class="card ca"><div class="ci">🤝</div><div class="ct_">Colaboración en tiempo real</div><div class="cb_">Múltiples personas editando el mismo documento simultáneamente. Los cambios aparecen al instante.</div></div>
+    <div class="card cp"><div class="ci">🔐</div><div class="ct_">Control de acceso total</div><div class="cb_">Decides exactamente quién puede ver, editar o comentar. Revocar acceso en cualquier momento.</div></div>
+    <div class="card ct"><div class="ci">📊</div><div class="ct_">1 TB de espacio</div><div class="cb_">Equivale a almacenar aproximadamente 500,000 documentos Word. Espacio más que suficiente.</div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 09 — ONEDRIVE: SUBIR Y ORGANIZAR
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="9">
+  <div class="eyebrow">Módulo 2 · OneDrive</div>
+  <h2 class="stitle">Subir, Organizar y <em>Compartir Archivos</em></h2>
+  <div class="tc">
+    <div>
+      <h3 class="sh">Cómo subir archivos</h3>
+      <ul class="steps">
+        <li class="step"><div class="sn">1</div><div class="sc"><strong>Arrastrar y soltar</strong><span>Abre OneDrive en el navegador y arrastra archivos directamente desde tu explorador de archivos hacia la ventana.</span></div></li>
+        <li class="step"><div class="sn">2</div><div class="sc"><strong>Botón Subir</strong><span>Clic en <em>"+ Nuevo"</em> → <em>"Subir archivo"</em> → navega hasta el archivo.</span></div></li>
+        <li class="step"><div class="sn">3</div><div class="sc"><strong>Guardar desde Office</strong><span>En Word, Excel o PowerPoint: <em>Archivo → Guardar como → OneDrive</em>. El archivo queda directamente en la nube.</span></div></li>
+        <li class="step"><div class="sn">4</div><div class="sc"><strong>Desde el celular</strong><span>En la app OneDrive: ícono de cámara → foto del documento → se sube automáticamente.</span></div></li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="sh">Compartir archivos de forma segura</h3>
+      <table class="tbl">
+        <thead><tr><th>Tipo de acceso</th><th>¿Cuándo usarlo?</th></tr></thead>
+        <tbody>
+          <tr><td><strong>🔒 Personas específicas</strong></td><td>Documentos sensibles, expedientes, datos confidenciales</td></tr>
+          <tr><td><strong>🏢 Mi organización</strong></td><td>Circulares, formularios, plantillas internas</td></tr>
+          <tr><td><strong>🔗 Cualquiera con el enlace</strong></td><td>Solo documentos NO confidenciales — usar con precaución</td></tr>
+        </tbody>
+      </table>
+      <div class="demo" style="margin-top:10px">
+        <div class="demo-lbl">📁 Estructura de carpetas sugerida</div>
+        <p style="font-family:var(--mono);font-size:.78rem;line-height:2">
+          📁 <strong>OneDrive ONDP</strong><br>
+          &nbsp;&nbsp;📁 Casos Activos → 📁 Penal · Civil<br>
+          &nbsp;&nbsp;📁 Casos Archivados → 📁 2023 · 2024<br>
+          &nbsp;&nbsp;📁 Administrativo → Circulares · Formularios<br>
+          &nbsp;&nbsp;📁 Capacitaciones · Plantillas
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="secbox">
+    <span class="sbico">🔐</span>
+    <div class="sbcnt">
+      <div class="sbttl">Regla de seguridad para compartir</div>
+      <p class="sbtxt">Para expedientes y datos de clientes usa SIEMPRE <strong>"Personas específicas"</strong> con permiso de <strong>solo lectura</strong>. Revisa periódicamente quién tiene acceso a tus documentos y revoca el acceso cuando ya no sea necesario.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 10 — ONEDRIVE: VERSIONES Y COLABORACIÓN
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="10">
+  <div class="eyebrow">Módulo 2 · OneDrive</div>
+  <h2 class="stitle">Colaboración y <em>Historial de Versiones</em></h2>
+  <div class="tc">
+    <div>
+      <h3 class="sh">Co-autoría en tiempo real</h3>
+      <p class="bp">Una de las funciones más poderosas de OneDrive: múltiples personas editando el mismo documento al mismo tiempo.</p>
+      <ul class="steps">
+        <li class="step"><div class="sn">👥</div><div class="sc"><strong>Cómo activarla</strong><span>Comparte el documento con permiso de edición. Cuando varios lo abren, cada persona aparece con cursor de color diferente y los cambios se muestran en tiempo real.</span></div></li>
+        <li class="step"><div class="sn">💬</div><div class="sc"><strong>Comentarios sin alterar</strong><span>Selecciona texto → clic derecho → "Nuevo comentario". Ideal para revisiones legales donde el original no debe modificarse.</span></div></li>
+        <li class="step"><div class="sn">📋</div><div class="sc"><strong>Control de cambios</strong><span>En Word: Revisar → Control de cambios. Cada modificación queda marcada con nombre del autor y puede aceptarse o rechazarse.</span></div></li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="sh">Historial de versiones — Tu "máquina del tiempo"</h3>
+      <div class="demo">
+        <div class="demo-lbl">⏪ Recuperar versiones anteriores</div>
+        <p>OneDrive guarda versiones automáticas de cada documento. Si alguien borra información o necesitas ver el archivo de hace 3 días:<br><br>Clic derecho en el archivo → <em>"Historial de versiones"</em> → ver todas las versiones con fecha y autor → clic en <em>"Restaurar"</em>.</p>
+      </div>
+      <div class="note tip"><span class="ni">💡</span><div class="nb"><strong>OneDrive guarda versiones hasta 30-180 días</strong> según tu plan. Nunca más "perdí el trabajo de toda la semana".</div></div>
+      <div class="secbox" style="margin-top:10px">
+        <span class="sbico">🛡️</span>
+        <div class="sbcnt">
+          <div class="sbttl">Protección contra Ransomware</div>
+          <p class="sbtxt">Microsoft 365 detecta automáticamente ataques de ransomware a archivos de OneDrive y te notifica para restaurar a una versión limpia antes del ataque.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 11 — M3: TEAMS INTRO
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="11">
+  <div class="mhdr" style="background:linear-gradient(135deg,#4b0082,#6A1B9A)">
+    <div class="mhdr-num">03</div>
+    <div class="mhdr-info"><h2>Microsoft Teams</h2><p>El hub de colaboración y comunicación en tiempo real de tu institución</p></div>
+    <div class="mhdr-badge">💬 Teams · Microsoft 365</div>
+  </div>
+  <p class="lead">Microsoft Teams es mucho más que un programa de videollamadas. Es el <strong>centro de colaboración institucional</strong>: chat, reuniones, archivos, aplicaciones y trabajo en equipo — todo en un solo lugar.</p>
+  <div class="demo"><div class="demo-lbl">🏢 Analogía institucional</div><p>Imagina una oficina donde puedes hablar con un colega al instante por chat, entrar a una sala de reunión virtual en segundos, ver y editar documentos compartidos sin salir, y tener canales separados para cada área o proyecto. Teams es esa oficina digital permanente.</p></div>
+  <div class="grid g4">
+    <div class="card cp"><div class="ci">💬</div><div class="ct_">Chat en tiempo real</div><div class="cb_">Mensajes instantáneos individuales o en grupo, más rápido que el correo para temas del momento.</div></div>
+    <div class="card cp"><div class="ci">📹</div><div class="ct_">Reuniones virtuales</div><div class="cb_">Videoconferencias de alta calidad con audio, video, pantalla compartida y grabación.</div></div>
+    <div class="card cp"><div class="ci">📢</div><div class="ct_">Canales temáticos</div><div class="cb_">Organiza la comunicación por área, proyecto o tema. Todo queda documentado y buscable.</div></div>
+    <div class="card cp"><div class="ci">📁</div><div class="ct_">Archivos integrados</div><div class="cb_">Cada equipo tiene su propio espacio de archivos en OneDrive, accesible desde Teams.</div></div>
+  </div>
+  <div class="note pur"><span class="ni">💡</span><div class="nb"><strong>¿Cuándo usar Teams vs Correo?</strong> Usa <strong>Teams/chat</strong> para comunicaciones rápidas, coordinación del día a día y decisiones en tiempo real. Usa <strong>correo</strong> para comunicaciones formales, externas, con seguimiento legal o que requieren firma.</div></div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 12 — TEAMS: INTERFAZ Y CHAT
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="12">
+  <div class="eyebrow">Módulo 3 · Microsoft Teams</div>
+  <h2 class="stitle">Interfaz de Teams y <em>Chat Efectivo</em></h2>
+  <div class="tc">
+    <div>
+      <h3 class="sh">Navegando Teams</h3>
+      <table class="tbl">
+        <thead><tr><th>Sección</th><th>¿Para qué sirve?</th></tr></thead>
+        <tbody>
+          <tr><td><strong>💬 Chat</strong></td><td>Conversaciones privadas con 1 persona o grupos pequeños</td></tr>
+          <tr><td><strong>👥 Equipos</strong></td><td>Grupos institucionales con canales organizados por tema</td></tr>
+          <tr><td><strong>📅 Calendario</strong></td><td>Reuniones programadas, sincronizado con Outlook</td></tr>
+          <tr><td><strong>📞 Llamadas</strong></td><td>Llamadas de voz y video directas a compañeros</td></tr>
+          <tr><td><strong>📁 Archivos</strong></td><td>Documentos de todos los equipos en un solo lugar</td></tr>
+        </tbody>
+      </table>
+      <h3 class="sh">Chat en tiempo real</h3>
+      <ul class="steps">
+        <li class="step"><div class="sn">💬</div><div class="sc"><strong>Chat individual</strong><span>Clic en "Chat" → "Nuevo chat" → escribe el nombre del compañero → escribe el mensaje. Respuesta instantánea.</span></div></li>
+        <li class="step"><div class="sn">👥</div><div class="sc"><strong>Chat grupal</strong><span>Crea un chat con varios participantes para coordinar un equipo sin llenar el correo de todos.</span></div></li>
+        <li class="step"><div class="sn">📌</div><div class="sc"><strong>Mensajes importantes</strong><span>Pasa el cursor sobre un mensaje → ícono de marcador → "Guardar mensaje". Para encontrarlo después: tu foto → "Guardado".</span></div></li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="sh">Funciones útiles del chat</h3>
+      <div class="grid g2" style="gap:8px;margin:8px 0">
+        <div class="card cp" style="padding:12px 14px"><div class="cb_">😊 <strong>Reacciones</strong><br>Confirma recepción sin responder text</div></div>
+        <div class="card cp" style="padding:12px 14px"><div class="cb_">📌 <strong>Fijar mensajes</strong><br>Mantén info importante visible</div></div>
+        <div class="card cp" style="padding:12px 14px"><div class="cb_">@Mención<br>Notifica específicamente a alguien</div></div>
+        <div class="card cp" style="padding:12px 14px"><div class="cb_">📎 <strong>Compartir archivos</strong><br>Adjunta desde OneDrive directo</div></div>
+        <div class="card cp" style="padding:12px 14px"><div class="cb_">✏️ <strong>Editar mensajes</strong><br>Corrige errores enviados</div></div>
+        <div class="card cp" style="padding:12px 14px"><div class="cb_">🔍 <strong>Búsqueda</strong><br>Encuentra cualquier mensaje pasado</div></div>
+      </div>
+      <div class="note info" style="margin-top:10px"><span class="ni">⌨️</span><div class="nb"><strong>Atajos Teams:</strong> <kbd>Ctrl</kbd>+<kbd>E</kbd> Buscar · <kbd>Ctrl</kbd>+<kbd>N</kbd> Nuevo chat · <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> Silenciar micro en reunión.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 13 — TEAMS: REUNIONES
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="13">
+  <div class="eyebrow">Módulo 3 · Microsoft Teams</div>
+  <h2 class="stitle">Reuniones Virtuales <em>Profesionales</em> en Teams</h2>
+  <div class="tc">
+    <div>
+      <h3 class="sh">Programar una reunión</h3>
+      <ul class="steps">
+        <li class="step"><div class="sn">1</div><div class="sc"><strong>Desde el Calendario</strong><span>Clic en "Calendario" → "Nueva reunión" → pon título, fecha, hora y descripción.</span></div></li>
+        <li class="step"><div class="sn">2</div><div class="sc"><strong>Agregar participantes</strong><span>Escribe los nombres o correos. Teams muestra su disponibilidad para encontrar el horario ideal.</span></div></li>
+        <li class="step"><div class="sn">3</div><div class="sc"><strong>Invitar externos</strong><span>Puedes invitar personas fuera de la institución. Recibirán un enlace para unirse sin necesidad de tener Teams instalado.</span></div></li>
+        <li class="step"><div class="sn">4</div><div class="sc"><strong>Reunión inmediata</strong><span>En cualquier chat: clic en el ícono de cámara → "Reunirse ahora". Reunión lista en segundos.</span></div></li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="sh">Durante la reunión</h3>
+      <div class="grid g2" style="gap:8px;margin:8px 0">
+        <div class="card cp" style="padding:12px 14px"><div class="cb_">🎤 <strong>Silenciar micro</strong><br>Buena práctica cuando no hablas</div></div>
+        <div class="card cp" style="padding:12px 14px"><div class="cb_">🖥️ <strong>Compartir pantalla</strong><br>Muestra documentos o tu escritorio</div></div>
+        <div class="card cp" style="padding:12px 14px"><div class="cb_">✋ <strong>Levantar la mano</strong><br>Solicita turno para hablar</div></div>
+        <div class="card cp" style="padding:12px 14px"><div class="cb_">📝 <strong>Tomar notas</strong><br>Notas de reunión integradas en Teams</div></div>
+        <div class="card cp" style="padding:12px 14px"><div class="cb_">⏺️ <strong>Grabar reunión</strong><br>Queda guardada en OneDrive</div></div>
+        <div class="card cp" style="padding:12px 14px"><div class="cb_">💬 <strong>Chat de reunión</strong><br>Comparte enlaces sin interrumpir</div></div>
+      </div>
+      <div class="secbox" style="margin-top:10px">
+        <span class="sbico">🎯</span>
+        <div class="sbcnt">
+          <div class="sbttl">Etiqueta profesional en reuniones virtuales</div>
+          <p class="sbtxt">Silencia el micrófono cuando no hablas · Activa la cámara si es posible · Usa fondo virtual si tu entorno no es profesional · Llega 2 minutos antes · Prueba audio y video antes de reuniones importantes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="note pur"><span class="ni">📹</span><div class="nb"><strong>Fondos virtuales:</strong> En la reunión o antes de unirte, clic en los tres puntos → "Efectos de video y avatares" → elige un fondo o desenfocado. Profesionaliza tu apariencia desde cualquier lugar.</div></div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 14 — TEAMS: EQUIPOS Y CANALES
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="14">
+  <div class="eyebrow">Módulo 3 · Microsoft Teams</div>
+  <h2 class="stitle">Equipos, <em>Canales</em> y Trabajo Colaborativo</h2>
+  <p class="lead">Los Equipos y Canales de Teams son la forma más eficiente de organizar la comunicación institucional por departamento, área o proyecto.</p>
+  <div class="tc">
+    <div>
+      <h3 class="sh">¿Qué son los Equipos?</h3>
+      <p class="bp">Un <strong>Equipo</strong> es un grupo de trabajo con su espacio compartido de chat, archivos y reuniones. Puede ser un departamento, un área o un proyecto específico.</p>
+      <div class="demo"><div class="demo-lbl">🏛️ Ejemplo ONDP</div><p style="font-family:var(--mono);font-size:.78rem;line-height:2">
+        👥 <strong>Equipo: Defensa Pública RD</strong><br>
+        &nbsp;&nbsp;📢 General (anuncios institucionales)<br>
+        &nbsp;&nbsp;📢 Área Penal<br>
+        &nbsp;&nbsp;📢 Área Civil y Familiar<br>
+        &nbsp;&nbsp;📢 Administrativo<br>
+        &nbsp;&nbsp;📢 Capacitaciones
+      </p></div>
+    </div>
+    <div>
+      <h3 class="sh">¿Qué son los Canales?</h3>
+      <p class="bp">Los <strong>Canales</strong> son subcategorías dentro de un Equipo. Cada canal tiene su propio hilo de conversación, archivos y reuniones.</p>
+      <ul class="steps">
+        <li class="step"><div class="sn">📢</div><div class="sc"><strong>Canal General</strong><span>Automático en cada Equipo. Para comunicaciones que afectan a todos los miembros del grupo.</span></div></li>
+        <li class="step"><div class="sn">🔒</div><div class="sc"><strong>Canales privados</strong><span>Solo visible para los miembros seleccionados. Ideal para subgrupos o temas sensibles dentro de un equipo mayor.</span></div></li>
+        <li class="step"><div class="sn">📌</div><div class="sc"><strong>Pestañas en los canales</strong><span>Agrega apps, documentos de Word/Excel o sitios web como pestañas dentro del canal para acceso instantáneo sin buscar.</span></div></li>
+      </ul>
+    </div>
+  </div>
+  <div class="note pur"><span class="ni">💡</span><div class="nb"><strong>Best practice:</strong> Usa los canales para comunicaciones del equipo y <strong>archiva los documentos en la pestaña "Archivos" del canal</strong> (que está vinculada a OneDrive). Así todo el equipo tiene acceso centralizado sin duplicar archivos.</div></div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 15 — M4: SUITE OFFICE INTRO
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="15">
+  <div class="mhdr" style="background:linear-gradient(135deg,#C8561A,#BF360C)">
+    <div class="mhdr-num">04</div>
+    <div class="mhdr-info"><h2>Suite Office — Word, Excel y PowerPoint</h2><p>Las herramientas de productividad diaria potenciadas por la nube</p></div>
+    <div class="mhdr-badge">📝 Office · Microsoft 365</div>
+  </div>
+  <p class="lead">La Suite de Office que ya conoces ahora está en la nube con superpoderes: guardado automático, colaboración en tiempo real, acceso desde cualquier dispositivo y siempre actualizada sin instalaciones adicionales.</p>
+  <div class="grid g3">
+    <div class="card ca">
+      <div class="ci" style="font-size:2.5rem">📝</div>
+      <div class="ct_" style="font-size:1rem;color:#C8561A">Microsoft Word</div>
+      <div class="cb_">Documentos, informes, cartas, memorandos, contratos, expedientes. El procesador de texto más utilizado del mundo.</div>
+    </div>
+    <div class="card ca">
+      <div class="ci" style="font-size:2.5rem">📊</div>
+      <div class="ct_" style="font-size:1rem;color:#1a7a1a">Microsoft Excel</div>
+      <div class="cb_">Hojas de cálculo, estadísticas, registros, seguimiento de casos, presupuestos y análisis de datos.</div>
+    </div>
+    <div class="card ca">
+      <div class="ci" style="font-size:2.5rem">📐</div>
+      <div class="ct_" style="font-size:1rem;color:#c0392b">Microsoft PowerPoint</div>
+      <div class="cb_">Presentaciones profesionales para reuniones, talleres, informes ejecutivos y comunicaciones visuales.</div>
+    </div>
+  </div>
+  <div class="demo"><div class="demo-lbl">☁️ La diferencia con la versión tradicional</div><p><strong>Antes:</strong> Guardabas en el disco local, enviabas por correo, había versiones distintas, si la computadora fallaba perdías todo.<br><strong>Con Microsoft 365:</strong> Guardado automático en OneDrive, compartir con un enlace, todos trabajan en la misma versión, acceso desde cualquier dispositivo — todo en tiempo real.</p></div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 16 — WORD EN PROFUNDIDAD
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="16">
+  <div class="eyebrow">Módulo 4 · Suite Office</div>
+  <h2 class="stitle"><em>Microsoft Word</em> — Documentos Profesionales</h2>
+  <div class="tc">
+    <div>
+      <h3 class="sh">Funciones esenciales para la ONDP</h3>
+      <ul class="steps">
+        <li class="step"><div class="sn">📋</div><div class="sc"><strong>Plantillas institucionales</strong><span>File → Nuevo → busca plantillas. Usa plantillas de la institución para garantizar formato consistente en todos los documentos.</span></div></li>
+        <li class="step"><div class="sn">📑</div><div class="sc"><strong>Estilos de párrafo</strong><span>Usa los estilos predefinidos (Título, Encabezado 1, Normal). Esto garantiza consistencia visual y permite generar tabla de contenidos automática.</span></div></li>
+        <li class="step"><div class="sn">🔍</div><div class="sc"><strong>Control de cambios</strong><span>Revisar → Control de cambios. Cada modificación queda registrada con nombre y color del autor. Aceptar o rechazar cambios individualmente.</span></div></li>
+        <li class="step"><div class="sn">💬</div><div class="sc"><strong>Comentarios</strong><span>Selecciona texto → Insertar → Comentario. Para revisiones legales donde no quieres alterar el texto original.</span></div></li>
+        <li class="step"><div class="sn">✍️</div><div class="sc"><strong>Firma digital de documentos</strong><span>Insertar → Texto → Línea de firma. Permite firmas digitales con certificado o simplemente un espacio formal para firma.</span></div></li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="sh">Atajos de Word que ahorran tiempo</h3>
+      <div class="grid g2" style="gap:7px;margin:8px 0">
+        <div class="card ca" style="padding:10px 12px;text-align:center"><div class="cb_"><kbd>Ctrl</kbd>+<kbd>S</kbd><br>Guardar</div></div>
+        <div class="card ca" style="padding:10px 12px;text-align:center"><div class="cb_"><kbd>Ctrl</kbd>+<kbd>Z</kbd><br>Deshacer</div></div>
+        <div class="card ca" style="padding:10px 12px;text-align:center"><div class="cb_"><kbd>Ctrl</kbd>+<kbd>B</kbd><br>Negrita</div></div>
+        <div class="card ca" style="padding:10px 12px;text-align:center"><div class="cb_"><kbd>Ctrl</kbd>+<kbd>C/V</kbd><br>Copiar/Pegar</div></div>
+        <div class="card ca" style="padding:10px 12px;text-align:center"><div class="cb_"><kbd>Ctrl</kbd>+<kbd>P</kbd><br>Imprimir</div></div>
+        <div class="card ca" style="padding:10px 12px;text-align:center"><div class="cb_"><kbd>Ctrl</kbd>+<kbd>F</kbd><br>Buscar</div></div>
+        <div class="card ca" style="padding:10px 12px;text-align:center"><div class="cb_"><kbd>Ctrl</kbd>+<kbd>H</kbd><br>Buscar y reemplazar</div></div>
+        <div class="card ca" style="padding:10px 12px;text-align:center"><div class="cb_"><kbd>Ctrl</kbd>+<kbd>A</kbd><br>Seleccionar todo</div></div>
+      </div>
+      <div class="secbox" style="margin-top:10px">
+        <span class="sbico">💡</span>
+        <div class="sbcnt">
+          <div class="sbttl">Guardar como PDF desde Word</div>
+          <p class="sbtxt">Archivo → Exportar → Crear PDF/XPS. El PDF garantiza que el formato es exactamente como lo ves en pantalla independientemente del dispositivo que use el destinatario.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 17 — EXCEL EN PROFUNDIDAD
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="17">
+  <div class="eyebrow">Módulo 4 · Suite Office</div>
+  <h2 class="stitle"><em>Microsoft Excel</em> — Datos y Análisis</h2>
+  <p class="lead">Excel es mucho más que sumar números. Es la herramienta para organizar, analizar y visualizar cualquier tipo de información de forma estructurada.</p>
+  <div class="tc">
+    <div>
+      <h3 class="sh">Conceptos básicos fundamentales</h3>
+      <table class="tbl">
+        <thead><tr><th>Concepto</th><th>¿Qué es?</th><th>Ejemplo ONDP</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Celda</strong></td><td>Cada cuadro individual (ej: A1)</td><td>Un expediente, una fecha, un nombre</td></tr>
+          <tr><td><strong>Fila</strong></td><td>Línea horizontal de celdas</td><td>Todos los datos de un caso</td></tr>
+          <tr><td><strong>Columna</strong></td><td>Línea vertical de celdas</td><td>Número de caso, fecha, estado</td></tr>
+          <tr><td><strong>Hoja</strong></td><td>Una pestaña del libro</td><td>Casos activos, casos cerrados</td></tr>
+          <tr><td><strong>Fórmula</strong></td><td>Cálculo automático (=SUMA)</td><td>Total de casos atendidos</td></tr>
+        </tbody>
+      </table>
+      <h3 class="sh">Fórmulas esenciales</h3>
+      <div class="grid g2" style="gap:7px;margin:8px 0">
+        <div class="card cg" style="padding:10px 12px"><div class="cb_"><code>=SUMA(A1:A10)</code><br>Suma un rango</div></div>
+        <div class="card cg" style="padding:10px 12px"><div class="cb_"><code>=PROMEDIO(B1:B10)</code><br>Calcula promedio</div></div>
+        <div class="card cg" style="padding:10px 12px"><div class="cb_"><code>=CONTAR(C1:C10)</code><br>Cuenta celdas con datos</div></div>
+        <div class="card cg" style="padding:10px 12px"><div class="cb_"><code>=HOY()</code><br>Fecha de hoy</div></div>
+      </div>
+    </div>
+    <div>
+      <h3 class="sh">Funciones avanzadas para gestión</h3>
+      <ul class="steps">
+        <li class="step"><div class="sn">🔍</div><div class="sc"><strong>Filtros</strong><span>Datos → Filtro. Filtra rápidamente por estado de caso, fecha, área o cualquier columna sin eliminar datos.</span></div></li>
+        <li class="step"><div class="sn">📊</div><div class="sc"><strong>Tablas (Ctrl+T)</strong><span>Convierte un rango en tabla inteligente. Los filtros y formatos se aplican automáticamente a nuevas filas.</span></div></li>
+        <li class="step"><div class="sn">📈</div><div class="sc"><strong>Gráficos</strong><span>Selecciona datos → Insertar → Gráfico. Visualiza estadísticas de casos, tendencias mensuales o distribución por área.</span></div></li>
+        <li class="step"><div class="sn">❄️</div><div class="sc"><strong>Inmovilizar paneles</strong><span>Vista → Inmovilizar paneles. Mantén los encabezados visibles mientras desplazas cientos de filas.</span></div></li>
+        <li class="step"><div class="sn">🎨</div><div class="sc"><strong>Formato condicional</strong><span>Inicio → Formato condicional. Colorea automáticamente celdas según su valor — muy útil para estados de expedientes.</span></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 18 — POWERPOINT
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="18">
+  <div class="eyebrow">Módulo 4 · Suite Office</div>
+  <h2 class="stitle"><em>Microsoft PowerPoint</em> — Presentaciones Impactantes</h2>
+  <div class="tc">
+    <div>
+      <h3 class="sh">Crear una presentación profesional</h3>
+      <ul class="steps">
+        <li class="step"><div class="sn">1</div><div class="sc"><strong>Elegir un diseño</strong><span>Archivo → Nuevo → elige una plantilla o diseño. PowerPoint 365 incluye el asistente <strong>Designer</strong> que sugiere diseños automáticamente cuando agregas contenido.</span></div></li>
+        <li class="step"><div class="sn">2</div><div class="sc"><strong>Estructura recomendada</strong><span>Diapositiva 1: Título y organización. Diapositivas 2-N: Contenido organizado (un tema por diapositiva). Última: Conclusiones / Preguntas.</span></div></li>
+        <li class="step"><div class="sn">3</div><div class="sc"><strong>Regla 5-5-5</strong><span>No más de 5 puntos por diapositiva, no más de 5 palabras por punto, no más de 5 diapositivas consecutivas de texto. Menos es más.</span></div></li>
+        <li class="step"><div class="sn">4</div><div class="sc"><strong>Agregar imágenes y gráficos</strong><span>Insertar → Imágenes → "Imágenes de stock" (incluidas en M365, libres de derechos). Para gráficos: Insertar → Gráfico (vinculado a datos de Excel).</span></div></li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="sh">Funciones clave de PowerPoint 365</h3>
+      <div class="grid g2" style="gap:8px;margin:8px 0">
+        <div class="card cr" style="padding:12px 14px"><div class="cb_">✨ <strong>Designer AI</strong><br>Propone diseños automáticamente</div></div>
+        <div class="card cr" style="padding:12px 14px"><div class="cb_">🗣️ <strong>Presentador</strong><br>Notas del presentador invisibles al público</div></div>
+        <div class="card cr" style="padding:12px 14px"><div class="cb_">📱 <strong>Control remoto</strong><br>Controla con el celular durante la presentación</div></div>
+        <div class="card cr" style="padding:12px 14px"><div class="cb_">📤 <strong>Compartir en Teams</strong><br>Presentación directa en reunión virtual</div></div>
+        <div class="card cr" style="padding:12px 14px"><div class="cb_">🎬 <strong>Grabar presentación</strong><span style="font-size:.75rem"> — con narración de voz para e-learning</span></div></div>
+        <div class="card cr" style="padding:12px 14px"><div class="cb_">🌐 <strong>Publicar en la web</strong><br>Enlace para ver sin instalar Office</div></div>
+      </div>
+      <div class="note gold"><span class="ni">⌨️</span><div class="nb"><strong>Durante la presentación:</strong> <kbd>F5</kbd> Iniciar · <kbd>B</kbd> Pantalla negra (pausa) · <kbd>W</kbd> Pantalla blanca · <kbd>Esc</kbd> Salir · Número + <kbd>Enter</kbd> ir a diapositiva específica.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 19 — INTEGRACIÓN M365
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="19">
+  <div class="eyebrow">Integración Completa</div>
+  <h2 class="stitle">El Poder de <em>Microsoft 365</em> Trabajando Junto</h2>
+  <p class="lead">La verdadera magia de Microsoft 365 ocurre cuando todas sus herramientas trabajan juntas. Veamos cómo una tarea común en la ONDP se vuelve más eficiente con la integración completa.</p>
+  <div class="demo"><div class="demo-lbl">📌 Caso práctico — Preparar una audiencia importante</div><p>
+    <strong>Sin Microsoft 365:</strong> Buscas el expediente en carpetas del escritorio → lo envías por correo a tu equipo → cada uno hace cambios → tienes 5 versiones distintas → organizas reunión por teléfono → presentas desde una USB que tal vez no funciona.<br><br>
+    <strong>Con Microsoft 365:</strong>
+    1. El expediente está en <strong>OneDrive</strong> organizado por carpeta.
+    2. Lo compartes con tu equipo por <strong>Teams</strong> — todos editan la misma versión en <strong>Word</strong>.
+    3. Programas la reunión de revisión desde <strong>Outlook</strong> — todos reciben invitación.
+    4. La reunión ocurre en <strong>Teams</strong> — presentas el expediente desde <strong>OneDrive</strong> compartiendo pantalla.
+    5. Las estadísticas del caso están en <strong>Excel</strong>, presentadas en **PowerPoint** sin copiar y pegar.
+  </p></div>
+  <h3 class="sh">Flujos de trabajo integrados</h3>
+  <div class="grid g2">
+    <div class="card cb"><div class="ci">📧→☁️</div><div class="ct_">Outlook + OneDrive</div><div class="cb_">Adjunta archivos de OneDrive en correos como enlace en lugar de adjunto pesado. El destinatario ve siempre la última versión.</div></div>
+    <div class="card cp"><div class="ci">💬→📁</div><div class="ct_">Teams + OneDrive</div><div class="cb_">Comparte documentos de OneDrive directamente en Teams. Los archivos del canal están en OneDrive del equipo automáticamente.</div></div>
+    <div class="card cg"><div class="ci">📊→📐</div><div class="ct_">Excel + PowerPoint</div><div class="cb_">Inserta gráficos de Excel vinculados en PowerPoint. Al actualizar los datos en Excel, el gráfico en la presentación se actualiza solo.</div></div>
+    <div class="card ca"><div class="ci">📅→💬</div><div class="ct_">Outlook + Teams</div><div class="cb_">Las reuniones creadas en Outlook aparecen en Teams con enlace de unión automático. Calendarios 100% sincronizados.</div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 20 — ACTIVIDADES PRÁCTICAS
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="20">
+  <div class="eyebrow">Práctica Guiada</div>
+  <h2 class="stitle">Actividades <em>Prácticas</em> del Taller</h2>
+  <p class="lead">Ahora que conoces las herramientas, es momento de practicar. Realiza estas actividades guiadas con el facilitador para reforzar lo aprendido.</p>
+  <div class="grid g2">
+    <div class="card cb"><div class="ci">📧</div><div class="ct_">Actividad 1 — Mi Firma Profesional</div><div class="cb_" style="margin-bottom:10px">Configura tu firma de correo en Outlook con nombre completo, cargo, departamento, institución y teléfono.</div><div style="font-family:var(--mono);font-size:.78rem;color:var(--ms)">⏱ 10 minutos</div></div>
+    <div class="card cg"><div class="ci">☁️</div><div class="ct_">Actividad 2 — Mi Primera Carpeta OneDrive</div><div class="cb_" style="margin-bottom:10px">Accede a OneDrive, crea una carpeta "Taller M365", sube un documento y compártelo con el facilitador con permiso de solo lectura.</div><div style="font-family:var(--mono);font-size:.78rem;color:var(--grn)">⏱ 15 minutos</div></div>
+    <div class="card cp"><div class="ci">💬</div><div class="ct_">Actividad 3 — Chat y Reunión en Teams</div><div class="cb_" style="margin-bottom:10px">Envía un mensaje al facilitador por Teams, participa en una reunión de prueba y practica compartir pantalla.</div><div style="font-family:var(--mono);font-size:.78rem;color:var(--pur)">⏱ 15 minutos</div></div>
+    <div class="card ca"><div class="ci">📊</div><div class="ct_">Actividad 4 — Documento Colaborativo</div><div class="cb_" style="margin-bottom:10px">En parejas, creen un documento Word en OneDrive y edítenlo simultáneamente. Usen comentarios para dar retroalimentación.</div><div style="font-family:var(--mono);font-size:.78rem;color:var(--org)">⏱ 20 minutos</div></div>
+  </div>
+  <div class="note gold"><span class="ni">🎯</span><div class="nb"><strong>Actividad Bonus — Excel institucional:</strong> Crea una hoja de seguimiento de tareas con columnas: Tarea, Responsable, Fecha Límite y Estado. Aplica formato condicional para que las tareas completadas sean verdes y las vencidas sean rojas.</div></div>
+  <div class="secbox">
+    <span class="sbico">💡</span>
+    <div class="sbcnt">
+      <div class="sbttl">Consejo del facilitador</div>
+      <p class="sbtxt">No tengas miedo de explorar. Microsoft 365 tiene "Deshacer" en todas partes. El mejor aprendizaje viene de probar, equivocarse y corregir. La práctica diaria de estas herramientas transformará tu productividad en semanas.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 21 — CIERRE Y RESUMEN
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="21">
+  <div class="eyebrow">Cierre del Taller</div>
+  <h2 class="stitle">¡Lo Lograste! Resumen de lo <em>Aprendido</em></h2>
+  <div class="chero">
+    <div style="position:relative;z-index:1;">
+      <p style="font-family:var(--mono);font-size:9.5px;letter-spacing:3px;color:rgba(255,255,255,.3);margin-bottom:7px">TALLER COMPLETADO — 4 MÓDULOS</p>
+      <h3>Microsoft 365 · Oficina Nacional de Defensa Pública ✓</h3>
+      <p>Hoy diste un paso enorme en tu productividad digital y en la eficiencia de la institución. Las herramientas que aprendiste tienen impacto inmediato en tu trabajo diario y en la calidad del servicio que brindas a quienes más lo necesitan.</p>
+    </div>
+  </div>
+  <h3 class="sh">Todo lo que cubrimos hoy</h3>
+  <div class="sgrid">
+    <div class="schip"><span class="si">📧</span><strong>Outlook</strong><span>Correo profesional</span></div>
+    <div class="schip"><span class="si">✍️</span><strong>Firma digital</strong><span>Presentación automática</span></div>
+    <div class="schip"><span class="si">📁</span><strong>Organización</strong><span>Carpetas y reglas</span></div>
+    <div class="schip"><span class="si">🔐</span><strong>Seguridad</strong><span>Identificar phishing</span></div>
+    <div class="schip"><span class="si">☁️</span><strong>OneDrive</strong><span>Nube institucional</span></div>
+    <div class="schip"><span class="si">🤝</span><strong>Co-autoría</strong><span>Edición simultánea</span></div>
+    <div class="schip"><span class="si">⏪</span><strong>Versiones</strong><span>Historial de archivos</span></div>
+    <div class="schip"><span class="si">🔗</span><strong>Compartir</strong><span>Control de acceso</span></div>
+    <div class="schip"><span class="si">💬</span><strong>Teams Chat</strong><span>Comunicación ágil</span></div>
+    <div class="schip"><span class="si">📹</span><strong>Reuniones</strong><span>Videoconferencias pro</span></div>
+    <div class="schip"><span class="si">📢</span><strong>Canales</strong><span>Trabajo en equipo</span></div>
+    <div class="schip"><span class="si">📝</span><strong>Word</strong><span>Documentos nube</span></div>
+    <div class="schip"><span class="si">📊</span><strong>Excel</strong><span>Datos y análisis</span></div>
+    <div class="schip"><span class="si">📐</span><strong>PowerPoint</strong><span>Presentaciones</span></div>
+    <div class="schip"><span class="si">⚡</span><strong>Integración</strong><span>Todo conectado</span></div>
+    <div class="schip"><span class="si">🌐</span><strong>Cualquier lugar</strong><span>Acceso universal</span></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 22 — MENSAJE FINAL + CONTINUAR
+══════════════════════════════════════════════ -->
+<section class="slide" data-i="22">
+  <div class="eyebrow">Mensaje Final</div>
+  <h2 class="stitle">La Tecnología: <em>Tu Aliada</em> Personal y Profesional</h2>
+  <p class="lead">Dominar Microsoft 365 es solo el comienzo. La tecnología es una herramienta poderosa que, usada correctamente, multiplica tu impacto — en tu trabajo, en tu institución y en la vida de las personas que sirves.</p>
+  <div class="grid g3">
+    <div class="secbox" style="margin:0">
+      <span class="sbico">⚖️</span>
+      <div class="sbcnt">
+        <div class="sbttl">En tu vida profesional</div>
+        <p class="sbtxt">Cada expediente mejor organizado, cada comunicación más clara, cada reunión más eficiente significa un mejor servicio a la ciudadanía. La tecnología que aprendiste hoy hace que la justicia llegue más lejos y más rápido.</p>
+      </div>
+    </div>
+    <div class="secbox" style="margin:0">
+      <span class="sbico">🏠</span>
+      <div class="sbcnt">
+        <div class="sbttl">En tu vida personal</div>
+        <p class="sbtxt">OneDrive para tus fotos familiares, Teams para coordinar con amigos, Word para tus documentos personales, Excel para tu presupuesto del hogar. Microsoft 365 te acompaña más allá de la oficina.</p>
+      </div>
+    </div>
+    <div class="secbox" style="margin:0">
+      <span class="sbico">🚀</span>
+      <div class="sbcnt">
+        <div class="sbttl">El futuro es digital</div>
+        <p class="sbtxt">Las habilidades digitales son hoy tan fundamentales como leer y escribir. Cada herramienta que dominas te hace más valioso/a para tu institución y más competente en un mundo que se transforma digitalmente cada día.</p>
+      </div>
+    </div>
+  </div>
+  <div class="div"></div>
+  <h3 class="sh">Continúa tu formación — Recursos gratuitos</h3>
+  <div class="grid g2">
+    <div class="card cb"><div class="ci">📚</div><div class="ct_">Microsoft Learn</div><div class="cb_">Cursos oficiales y gratuitos de Microsoft 365. <code>learn.microsoft.com</code> — Cientos de módulos en español con certificados incluidos. Empieza por "Fundamentos de Microsoft 365".</div></div>
+    <div class="card cg"><div class="ci">🎓</div><div class="ct_">Cisco NetAcad</div><div class="cb_">Cursos gratuitos de tecnología y ciberseguridad. <code>netacad.com</code> — "IT Essentials" e "Introduction to Cybersecurity" son el complemento ideal.</div></div>
+    <div class="card cp"><div class="ci">📱</div><div class="ct_">Ayuda integrada en Office</div><div class="cb_">Presiona <kbd>F1</kbd> en cualquier app de Microsoft 365 o escribe tu pregunta en la barra de búsqueda de cualquier aplicación. La ayuda siempre está a un clic.</div></div>
+    <div class="card ct"><div class="ci">🛡️</div><div class="ct_">INCSRD · Ciberseguridad</div><div class="cb_">Instituto Nacional de Ciberseguridad de República Dominicana. Talleres, certificaciones y recursos para proteger tu vida digital personal e institucional.</div></div>
+  </div>
+  <div class="note tip" style="margin-top:14px"><span class="ni">🎯</span><div class="nb"><strong>Tu reto para esta semana:</strong> Implementa al menos 3 de las prácticas aprendidas hoy: configura tu firma en Outlook, guarda tu próximo documento en OneDrive y usa Teams en lugar de correo para tu próxima consulta rápida con un compañero.</div></div>
+  <div style="text-align:center;padding:20px 0 0">
+    <p style="font-family:var(--slab);font-size:1.1rem;color:var(--s0);margin-bottom:5px">¡Gracias por tu participación y compromiso!</p>
+    <p style="font-size:.87rem;color:var(--mut)">Facilitador: Claudio Rafael Arias · Asesor TI — Oficina Nacional de Defensa Pública · INCSRD · Cisco NetAcad</p>
+    <div style="margin-top:14px;display:inline-flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      <span class="cv-chip cch-b">📧 Outlook Profesional</span>
+      <span class="cv-chip cch-g">☁️ OneDrive Seguro</span>
+      <span class="cv-chip cch-p">💬 Teams Colaborativo</span>
+      <span class="cv-chip cch-a">📝 Office Productivo</span>
+    </div>
+  </div>
+</section>
+
+</div><!-- /deck -->
+
+<!-- BOTTOM NAV -->
+<div id="botbar">
+  <button class="nbtn" id="bprev" onclick="go(-1)" disabled>← Anterior</button>
+  <div id="dots"></div>
+  <button class="nbtn primary" id="bnext" onclick="go(1)">Siguiente →</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const N = slides.length;
+  let c = 0;
+
+  document.getElementById('tot').textContent = String(N).padStart(2,'0');
+
+  const dotsEl = document.getElementById('dots');
+  slides.forEach((_,i)=>{
+    const d = document.createElement('div');
+    d.className = 'dot'+(i===0?' active':'');
+    d.onclick = ()=> goTo(i);
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(idx){
+    slides[c].classList.remove('active');
+    dotsEl.children[c].classList.remove('active');
+    c = Math.max(0, Math.min(idx, N-1));
+    slides[c].classList.add('active');
+    dotsEl.children[c].classList.add('active');
+    document.getElementById('cur').textContent = String(c+1).padStart(2,'0');
+    document.getElementById('bprev').disabled = c===0;
+    const nb = document.getElementById('bnext');
+    nb.disabled = c===N-1;
+    nb.textContent = c===N-1 ? '✓ Completado' : 'Siguiente →';
+    document.getElementById('prog').style.width = ((c+1)/N*100)+'%';
+    slides[c].scrollTop = 0;
+  }
+
+  function go(d){ goTo(c+d); }
+
+  document.addEventListener('keydown', e=>{
+    if(e.key==='ArrowRight'||e.key==='ArrowDown') go(1);
+    if(e.key==='ArrowLeft' ||e.key==='ArrowUp')   go(-1);
+  });
+
+  goTo(0);
+</script>
+</body>
+</html>
